@@ -20,13 +20,20 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class TarkovPrice {
+    //物品表里所有物品
     private static Map<String, Item> itemsMap;
+    //翻译表里所有翻译
     private static Map<String, String> nameMap = new HashMap<>();
-    private static Map<String, Integer> priceMap = new HashMap<>();
-    private static Map<String, String> categoryMap = new HashMap<>();
+//    private static Map<String, Integer> priceMap = new HashMap<>();
+    //当前二级父类别的一级父类别
+    private static Map<String, String> secondLevelToFirstLevels = new HashMap<>();
+    //一级父类的二级儿子们
+    private static Map<String, List<String>> firstLevelToSecondLevels = new HashMap<>();
+    //整个翻译表
     private static Local locale;
+    //商人表
     private static Map<String, Trader> tradersMap;
-    private static Map<String, List<String>> tradersSellCategory = new HashMap<>();
+    //所有物品的树节点
     private static Map<String, Node> nodesMap = new HashMap<>();
 
     private static Node root = new Node("54009119af1c881c07000029", "总类", "Node");
@@ -51,12 +58,26 @@ public class TarkovPrice {
         String handbookFilePath  = "eft-database\\db\\templates\\handbook.json";
         HandBook handBook = JSONObject.parseObject(FileUtil.getFileContent(handbookFilePath), HandBook.class);
         handBook.getItems().forEach(priceItem -> {
-            itemsMap.get(priceItem.getId()).setCategory(priceItem.getCategory());
-            priceMap.put(priceItem.getId(),priceItem.getPrice());
+            String priceItemId = priceItem.getId();
+            Item item = itemsMap.get(priceItemId);
+            if (item != null) {
+                item.setCategory(priceItem.getCategory());
+            }
+//            priceMap.put(priceItem.getId(),priceItem.getPrice());
         });
-//        handBook.getCategories().forEach(priceItem -> {
-//            categoryMap.put(priceItem.getId(),priceItem.getPrice());
-//        });
+        handBook.getCategories().forEach(priceItem -> {
+            String firstLevelParent= priceItem.getCategory();
+            if (firstLevelParent == null || "".equals(firstLevelParent)) {
+                return;
+            }
+            List<String> secondLevels = firstLevelToSecondLevels.get(firstLevelParent);
+            if (secondLevels == null) {
+                secondLevels = new ArrayList<>();
+                firstLevelToSecondLevels.put(firstLevelParent, secondLevels);
+            }
+            secondLevelToFirstLevels.put(priceItem.getId(), firstLevelParent);
+            secondLevels.add(priceItem.getId());
+        });
         nameMap.put("54cb50c76803fa8b248b4571", "俄商Prapor");
         nameMap.put("54cb57776803fa99248b456e", "医生Therapist");
         nameMap.put("579dc571d53a0658a154fbec", "黑商");
@@ -68,7 +89,18 @@ public class TarkovPrice {
         String tradersFilePath  = "eft-database\\db\\traders";
         tradersMap = FileUtil.getTradersMap(tradersFilePath);
         tradersMap.forEach((id, trader) -> {
-            tradersSellCategory.put(id, trader.getSellCategory());
+            List<String> result = new ArrayList<>();
+            List<String> sellCategory  = trader.getSellCategory();
+            if (sellCategory != null) {
+                sellCategory.forEach(traderAcceptedLevel -> {
+                    result.add(traderAcceptedLevel);
+                    List<String> secondLevels = firstLevelToSecondLevels.get(traderAcceptedLevel);
+                    if (secondLevels != null) {
+                        result.addAll(secondLevels);
+                    }
+                });
+            }
+            trader.setSellCategory(result);
         });
 
     }
@@ -87,10 +119,10 @@ public class TarkovPrice {
                 return;
             }
             Trader maxPriceTrader = getMaxPriceTrader(item);
-            if(maxPriceTrader == null) {
-                System.out.println("没人买:" + nameMap.get(id));
-                return;
-            }
+//            if(maxPriceTrader == null) {
+//                System.out.println("没人买:" + nameMap.get(id));
+//                return;
+//            }
 
             itemValue.setId(item.getId());
             itemValue.setName(nameMap.get(id));
@@ -102,51 +134,29 @@ public class TarkovPrice {
             itemValue.setCellPrice(itemValue.getCreditsPrice() / itemValue.getTotalCell());
             itemValues.add(itemValue);
         });
-        write(itemValues);
+//        write(itemValues);
     }
 
     private static Trader getMaxPriceTrader(Item item) {
-
-        final List<Trader> traders = new ArrayList<>();
+        List<Trader> traders = new ArrayList<>();
         tradersMap.forEach((traderId, trader) -> {
-
             List<String> category = trader.getSellCategory();
             if (category.contains(item.getCategory())) {
                 traders.add(trader);
                 return;
             }
-            List<String> pcategory = getParentIds(item.getId());
-            pcategory.retainAll(category);
-            if(pcategory.size() > 0 ) {
-                traders.add(trader);
-            }
         });
-
+//
+//        if (traders.size() == 0 && ) {
+//
+//        }
         if (traders.size() > 0) {
             traders.sort(Comparator.comparingDouble(Trader::getDiscount));
             return traders.get(0);
-        } else if (priceMap.containsKey(item.getId())) {
-            List<Trader> traders2 = new ArrayList<>(tradersMap.values());
-            traders2.sort(Comparator.comparingDouble(Trader::getDiscount));
-            return traders2.get(0);
         }
         return null;
     }
 
-    public static List<String> getParentIds(String id) {
-        List<String> result = new ArrayList<>();
-        List<String> parents = new ArrayList<>();
-        Node node = nodesMap.get(id);
-        while (node != null) {
-            parents.add(node.getId());
-            String category = categoryMap.get(node.getId());
-            if(category != null) {
-                result.add(category);
-            }
-            node = node.getParent();
-        }
-        return result;
-    }
     public static Node addNode(Item nodeItem, String type) {
         String id = nodeItem.getId();
         if (nodesMap.containsKey(id)) {
