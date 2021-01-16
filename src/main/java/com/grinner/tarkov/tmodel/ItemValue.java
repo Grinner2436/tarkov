@@ -3,6 +3,7 @@ package com.grinner.tarkov.tmodel;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
+//储存item属性的对象，包括从item.json的_prop解析的内容和其他内容
 @Data
 public class ItemValue {
 

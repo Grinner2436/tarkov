@@ -4,7 +4,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.List;
-
+//商人信息表traders/base.json表对象
 @Data
 public class Trader {
 

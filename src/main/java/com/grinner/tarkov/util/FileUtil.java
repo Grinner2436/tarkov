@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FileUtil {
-    public static final String SERVER_PATH = "C:\\Game\\EFT\\Server\\packages";
+    public static final String SERVER_PATH = "D:\\ChenKai\\SPT-AKI Alpha R6\\Server\\packages";
     public static Map<String, Trader> getTradersMap(String path) {
         Map<String, Trader> tradersMap = new HashMap<>();
         Path dirPath = Paths.get(SERVER_PATH, path);

@@ -3,7 +3,7 @@ package com.grinner.tarkov.jmodel;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.grinner.tarkov.tmodel.ItemValue;
 import lombok.Data;
-
+//物品详情表items.json，项目对象
 @Data
 public class Item {
 

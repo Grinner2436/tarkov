@@ -2,7 +2,10 @@ package com.grinner.tarkov;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
-import com.grinner.tarkov.jmodel.*;
+import com.grinner.tarkov.jmodel.HandBook;
+import com.grinner.tarkov.jmodel.Item;
+import com.grinner.tarkov.jmodel.Local;
+import com.grinner.tarkov.jmodel.Trader;
 import com.grinner.tarkov.tmodel.ItemValue;
 import com.grinner.tarkov.tmodel.Node;
 import com.grinner.tarkov.util.FileUtil;
@@ -12,16 +15,13 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
-import java.util.stream.Collectors;
-//计算所有商品回购价格
-public class TarkovPrice {
+//计算任务树
+public class TarkovQuest {
     //物品表里所有物品
-    private static Map<String, Item> itemsMap;
+    private static Map<String, Item> questsMap;
     //翻译表里所有翻译
     private static Map<String, String> nameMap = new HashMap<>();
 //    private static Map<String, Integer> priceMap = new HashMap<>();
@@ -49,9 +49,9 @@ public class TarkovPrice {
         });
         nameMap.putAll(locale.getHandbook());
         //所有物品
-        String itemsFilePath  = "eft-database\\db\\templates\\items.json";
-        itemsMap = JSONObject.parseObject(FileUtil.getFileContent(itemsFilePath), new TypeReference<Map<String, Item>>(){});
-        itemsMap.forEach((id, item) -> {
+        String itemsFilePath  = "eft-database\\db\\templates\\quests.json";
+        questsMap = JSONObject.parseObject(FileUtil.getFileContent(itemsFilePath), new TypeReference<Map<String, Item>>(){});
+        questsMap.forEach((id, item) -> {
             addNode(item, item.getType());
         });
         //所有物品的价格和收购类别
@@ -59,7 +59,7 @@ public class TarkovPrice {
         HandBook handBook = JSONObject.parseObject(FileUtil.getFileContent(handbookFilePath), HandBook.class);
         handBook.getItems().forEach(priceItem -> {
             String priceItemId = priceItem.getId();
-            Item item = itemsMap.get(priceItemId);
+            Item item = questsMap.get(priceItemId);
             if (item != null) {
                 item.setCategory(priceItem.getCategory());
             }
@@ -110,7 +110,7 @@ public class TarkovPrice {
     }
     public static void test() {
         List<ItemValue> itemValues = new ArrayList<>();
-        itemsMap.forEach((id, item) -> {
+        questsMap.forEach((id, item) -> {
             if (item.getType().equals("Node")) {
                 return;
             }
@@ -166,7 +166,7 @@ public class TarkovPrice {
         if (parentId != null) {
             Node savedParentNode = nodesMap.get(parentId);
             if (savedParentNode == null) {
-                Item parentItem = itemsMap.get(parentId);
+                Item parentItem = questsMap.get(parentId);
                 if (parentItem == null) {
                     System.out.println("父类为空：" + parentId);
                 } else {
