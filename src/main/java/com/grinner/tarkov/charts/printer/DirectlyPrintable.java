@@ -1,4 +1,4 @@
-package com.grinner.tarkov.haha.printer;
+package com.grinner.tarkov.charts.printer;
 
 public interface DirectlyPrintable extends Printable{
     String getContent();
