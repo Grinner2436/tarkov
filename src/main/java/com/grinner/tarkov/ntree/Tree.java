@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Tree<T> {
@@ -13,6 +14,7 @@ public class Tree<T> {
     @Setter
     private Node<T> root;
     //物品表里所有物品
+    @Getter
     private Map<String, T> sourceMap;
     //所有物品的树节点
     @Getter
@@ -23,46 +25,61 @@ public class Tree<T> {
          this.sourceMap = sourceMap;
          this.parser = parser;
     }
-    public Node<T> addNode(Node<T> currentNode) {
+
+    public Node<T> addNodeFromChild(Node<T> currentNode) {
         String id = currentNode.getId();
         if (nodesMap.containsKey(id)) {
             return null;
         }
-//        Node<T> currentNode = parser.parseNode(this, parentItem);
-//        new Node<T>(id, LocaleUtil.getName(id), null);
 
-        String parentId = currentNode.getParentId();
-        Node<T> parentNode = root;
-        if (parentId != null && !parentId.equals("")) {
-            Node<T> savedParentNode = nodesMap.get(parentId);
-            if (savedParentNode == null) {
+        //父节点列表
+        List<String> parentIds = currentNode.getParentIds();
+        if (parentIds == null || parentIds.isEmpty()) {
+            parentIds = currentNode.getSpecialParentIds();
+        }
+
+        //挂在根节点
+        if (parentIds == null || parentIds.isEmpty()) {
+            Node<T> parentNode = root;
+            parentNode.addChild(currentNode);
+            currentNode.addParent(parentNode);
+        }
+
+        //挂在父节点
+        for (String parentId :parentIds) {
+            Node<T> parentNode = nodesMap.get(parentId);
+            if (parentNode == null) {
                 T parentItem = sourceMap.get(parentId);
                 if (parentItem == null) {
-                    System.out.println("父类为空：" + parentId);
+                    System.out.println("source Parent不存在：" + parentId);
                 } else {
                     Node<T> newParentNode = parser.parseNode(this, parentItem);
-                    parentNode = addNode(newParentNode);
+                    parentNode = addNodeFromChild(newParentNode);
                 }
-            } else {
-                parentNode = savedParentNode;
             }
-        } else {
-            parentNode = nodesMap.get(currentNode.getSpecialParentId());
+            if (parentNode != null) {
+                parentNode.addChild(currentNode);
+                currentNode.addParent(parentNode);
+            }
         }
-        if (parentNode != null) {
-            parentNode.addChild(currentNode);
-            currentNode.setParent(parentNode);
-        }
+        //保存当前节点
         nodesMap.put(id, currentNode);
         return currentNode;
     }
 
-    public void addNodes(Collection<T> sourceObjects) {
+    public void addNodesFromChild(Collection<T> sourceObjects) {
         if (sourceObjects != null) {
             sourceObjects.forEach(sourceObject -> {
                 Node<T> newNode = parser.parseNode(this, sourceObject);
-                this.addNode(newNode);
+                this.addNodeFromChild(newNode);
             });
+        }
+    }
+
+    public void addNodeFromParent(Node<T> currentNode) {
+        String id = currentNode.getId();
+        if (nodesMap.containsKey(id)) {
+            return;
         }
     }
 }

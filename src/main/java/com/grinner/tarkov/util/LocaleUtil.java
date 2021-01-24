@@ -46,17 +46,22 @@ public class LocaleUtil {
     public static String getName(String id){
         String result = "未知翻译";
         if (nameMap.containsKey(id)) {
-            result = nameMap.get(id)
-                    .replace("—","-")
-                    .replace("？","?")
-                    .replace("\"","'")
-                    .replace("”","'")
-                    .replace("“","'")
-                    .replace("\n","'")
-                    .replace("\r","'")
-                    ;
+            result = safeName(nameMap.get(id));
+
         }
         return result;
+    }
+
+    public static String safeName(String source) {
+        return source.replace("—","-")
+                .replace("？","?")
+                .replace("\"","'")
+                .replace("%","\"")
+                .replace("”","'")
+                .replace("“","'")
+                .replace("\n","'")
+                .replace("\r","'")
+        ;
     }
 
     public static void main(String[] args) {

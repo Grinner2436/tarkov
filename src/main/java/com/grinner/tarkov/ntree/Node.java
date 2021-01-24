@@ -15,7 +15,7 @@ public abstract class Node<T> {
     private String name;
 
     private List<Node<T>> children;
-    private Node<T> parent;
+    private List<Node<T>> parents;
 
     private T source;
     public Node(T source) {
@@ -27,13 +27,18 @@ public abstract class Node<T> {
         this.name = name;
         this.source = source;
         this.children = new ArrayList<>();
+        this.parents = new ArrayList<>();
     }
 
     public void addChild(Node<T> child) {
         this.children.add(child);
     }
+    public void addParent(Node<T> parent) {
+        this.parents.add(parent);
+    }
 
-    public abstract String getParentId();
-    public abstract String getSpecialParentId();
-
+    public abstract List<String> getParentIds();
+    public abstract List<String> getSpecialParentIds();
+//    public abstract List<String> getChildrenIds();
+//    public abstract List<String> getSpecialChildrenIds();
 }

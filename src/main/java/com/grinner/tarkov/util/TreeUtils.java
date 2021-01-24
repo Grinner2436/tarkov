@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static com.grinner.tarkov.util.LocaleUtil.getName;
+import static com.grinner.tarkov.util.LocaleUtil.safeName;
 
 //计算任务树
 public class TreeUtils {
@@ -55,11 +56,12 @@ public class TreeUtils {
             Node<T>  child = children.get(index);
             flowChart.useLine(child.getId(), FlowChart.LineStyle.LINK, node.getId());
             FlowChart.FlowChartNode flowChartNode = flowChart.useNode(child.getId());
-            String nodeName = getName(child.getId());
-            flowChartNode.content(nodeName);
+            String childName = safeName(child.getName());
+            flowChartNode.content(childName);
             parse(child, flowChart);
         }
-        flowChart.useNode(node.getId()).content(getName(node.getId()));
+        String nodeName = safeName(node.getName());
+        flowChart.useNode(node.getId()).content(nodeName);
     }
 
 }

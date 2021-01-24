@@ -6,9 +6,9 @@ import com.grinner.tarkov.db.templates.quests.Quest;
 import com.grinner.tarkov.db.templates.quests.QuestConditionTable;
 import com.grinner.tarkov.db.templates.quests.conditions.Condition;
 import com.grinner.tarkov.db.templates.quests.conditions.QuestCondition;
+import com.grinner.tarkov.ntree.Node;
 import com.grinner.tarkov.ntree.NodeParser;
 import com.grinner.tarkov.ntree.Tree;
-import com.grinner.tarkov.ntree.Node;
 import com.grinner.tarkov.util.FileUtil;
 import com.grinner.tarkov.util.LocaleUtil;
 import com.grinner.tarkov.util.TreeUtils;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class QuestRunner {
+public class CollectorQuestRunner {
     public static void main(String[] args) {
         try {
             //基本设施
@@ -41,7 +41,7 @@ public class QuestRunner {
                 return rootNode;
             };
             NodeParser<Quest> questNodeParser = (tree, quest) -> {
-                Node<Quest> node = new Node<Quest>(quest, quest.getId(), quest.getName()) {
+                Node<Quest> node = new Node<Quest>(quest, quest.getId(), LocaleUtil.getName(quest.getId())) {
                     @Override
                     public List<String> getParentIds() {
                         List<String> result =  new ArrayList<>();
@@ -54,19 +54,30 @@ public class QuestRunner {
                         String questTraderName = LocaleUtil.getName(quest.getTraderId());
                         //条件变Quest
                         List<String> parentQuestIds = conditions.stream().map(condition -> {
+                            if (!(condition instanceof QuestCondition)) {
+                                return null;
+                            }
                             QuestCondition childQuestCondition = (QuestCondition) condition;
                             String questId = childQuestCondition.getTarget();
                             Quest parentQuest = tree.getSourceMap().get(questId);
                             return parentQuest;
-                            //条件变Id
+                        //条件变Id
                         }).filter(mappedQuest -> mappedQuest != null).map(mappedQuest -> {
                             if (!mappedQuest.getTraderId().equals(quest.getTraderId())) {
+                                String sourceQuest  = LocaleUtil.getName(mappedQuest.getId());
+                                String sourceTrader = LocaleUtil.getName(mappedQuest.getTraderId());
+
                                 StringBuffer message = new StringBuffer();
-                                message.append("商人").append(questTraderName).append("的任务：").append(LocaleUtil.getName(quest.getId()))
-                                        .append("的前置任务：").append(LocaleUtil.getName(mappedQuest.getId()))
-                                        .append("的商人是：").append(LocaleUtil.getName(mappedQuest.getTraderId()));
+                                message.append(quest.getId()).append("(").append(LocaleUtil.getName(quest.getId())).append(")-->")
+                                        .append(mappedQuest.getId()).append("(").append(LocaleUtil.getName(mappedQuest.getId())).append(")");
+//                                message.append(questTraderName).append("[").append(LocaleUtil.getName(quest.getId()))
+//                                        .append("]前置任务：")
+//                                        .append(sourceTrader).append("[").append(sourceQuest).append("]");
                                 System.out.println(message);
-                                return null;
+//                                String newName = "%【@" + sourceTrader + "（" + sourceQuest + "）】" + this.getName() + "%";
+//                                quest.setName(newName);
+//                                this.setName(newName);
+                                return quest.getTraderId();
                             }
                             return mappedQuest.getId();
                         }).filter(questId -> questId != null && !questId.equals("")).collect(Collectors.toList());
