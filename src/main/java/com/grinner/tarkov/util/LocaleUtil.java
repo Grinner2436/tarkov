@@ -41,6 +41,10 @@ public class LocaleUtil {
         nameMap.put("5a7c2eca46aef81a7ca2145d", "枪商Mechanic");
         nameMap.put("5ac3b934156ae10c4430e83c", "服装商Ragman");
         nameMap.put("5c0647fdd443bc2504c2d371", "猎人Jaeger");
+
+        nameMap.put("Common", "常见");
+        nameMap.put("Rare", "罕见");
+        nameMap.put("Superrare", "稀有");
     }
 
     public static String getName(String id){

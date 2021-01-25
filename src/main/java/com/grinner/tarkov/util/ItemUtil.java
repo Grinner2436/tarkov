@@ -13,7 +13,7 @@ public class ItemUtil {
     private static Map<String, ItemRow> itemRowsMap = new HashMap<>();
     public static Map<String, Item> itemsMap = new HashMap<>();
     private static HandBookTable handBook;
-    private static Map<String, HandBookItemRow> priceItemsMap = new HashMap<>();
+    public static Map<String, HandBookItemRow> priceItemsMap = new HashMap<>();
     private static Map<String, HandBookItemRow> priceCategoryMap = new HashMap<>();
     //商人表
     private static Map<String, Trader> tradersMap;
@@ -51,12 +51,12 @@ public class ItemUtil {
             if (category != null) {
                 priceItem.setCategory(category);
             } else {
-                System.out.println("没有商人购买此商品：" + LocaleUtil.getName(priceItem.getId()) + ":" + LocaleUtil.getName(priceItem.getCategory()));
+//                System.out.println("没有商人购买此商品：" + LocaleUtil.getName(priceItem.getId()) + ":" + LocaleUtil.getName(priceItem.getCategory()));
             }
         });
 
         itemRowsMap.values().stream().filter(itemRow -> {
-            return !"Not_exist".equals(itemRow.getProps().getRarity());
+            return !"Not_exist".equals(itemRow.getProps().getRarity()) && priceItemsMap.containsKey(itemRow.getId());
         }).forEach(itemRow -> {
             Item item = itemRow.getProps();
             String id = itemRow.getId();
@@ -70,7 +70,7 @@ public class ItemUtil {
                 String categoryName = LocaleUtil.getName(category);
                 if (category != null) {
                     if (!category.equals(item.getCategory())) {
-                        System.out.println(LocaleUtil.getName(item.getCategory()) + "】:【" + categoryName);
+//                        System.out.println(LocaleUtil.getName(item.getCategory()) + "】:【" + categoryName);
                     }
                 }
                 item.setSellCategory(category);
@@ -106,6 +106,9 @@ public class ItemUtil {
             }
             //商人价格
             Trader maxPriceTrader = getMaxPriceTrader(item.getSellCategory());
+            if (maxPriceTrader == null) {
+                return;
+            }
             float maxPrice = item.getCreditsPrice() * (1F - (maxPriceTrader.getDiscount() / 100F));
             item.setMaxPrice(maxPrice);
             item.setMaxPriceTrader(LocaleUtil.getName(maxPriceTrader.getId()));

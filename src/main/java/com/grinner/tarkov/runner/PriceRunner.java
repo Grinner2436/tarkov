@@ -2,6 +2,7 @@ package com.grinner.tarkov.runner;
 
 import com.grinner.tarkov.db.items.Item;
 import com.grinner.tarkov.util.ItemUtil;
+import com.grinner.tarkov.util.LocaleUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -12,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 //计算所有商品回购价格
 public class PriceRunner {
@@ -69,7 +71,10 @@ public class PriceRunner {
 //        Node<Item> rootNode = rootNodeParser.parseNode(tree, root);
 //        tree.setRoot(rootNode);
 //        tree.addNodesFromChild(itemsMap.values());
-        write(new ArrayList<>(ItemUtil.itemsMap.values()));
+        List<Item> items = new ArrayList<>(ItemUtil.itemsMap.values()).stream()
+                .filter(item -> ItemUtil.priceItemsMap.containsKey(item.getId()))
+                .collect(Collectors.toList());
+        write(items);
     }
 
     private static void write(List<Item> items) {
@@ -82,8 +87,9 @@ public class PriceRunner {
                     "总占用空间","宽度","高度","总重量",
                     "稀有程度","生成机会",
                     "任务","任务用量",
+                    "奖励","奖励数量",
                     "藏身处","藏身处用量",
-                    "生产","任务用量"
+//                    "生产","配方用量"
             };
             Row row = sheet1.createRow(0);
             for (int i = 0; i < headers.length; i++) {
@@ -144,7 +150,7 @@ public class PriceRunner {
             }
             {
                 Cell cell = row.createCell(12);
-                cell.setCellValue(item.getRarity());
+                cell.setCellValue(LocaleUtil.getName(item.getRarity()));
             }
             {
                 Cell cell = row.createCell(13);
@@ -153,6 +159,9 @@ public class PriceRunner {
             if (item.isQuestItem()) {
                 {
                     Cell cell = row.createCell(14);
+                    if (item.getRequiredQuests() != null) {
+                        item.setRequiredQuests(item.getRequiredQuests().substring(0,item.getRequiredQuests().length() - 1));
+                    }
                     cell.setCellValue(item.getRequiredQuests());
                 }
                 {
@@ -163,6 +172,9 @@ public class PriceRunner {
             if (item.isRewardItem()) {
                 {
                     Cell cell = row.createCell(16);
+                    if (item.getRewardQuests() != null) {
+                        item.setRewardQuests(item.getRewardQuests().substring(0,item.getRewardQuests().length() - 1));
+                    }
                     cell.setCellValue(item.getRewardQuests());
                 }
                 {
@@ -173,6 +185,9 @@ public class PriceRunner {
             if (item.isHideOutItem()) {
                 {
                     Cell cell = row.createCell(18);
+                    if (item.getLevelUps() != null) {
+                        item.setLevelUps(item.getLevelUps().substring(0,item.getLevelUps().length() - 1));
+                    }
                     cell.setCellValue(item.getLevelUps());
                 }
                 {
