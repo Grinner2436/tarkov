@@ -89,6 +89,7 @@ public class PriceRunner {
                     "任务","任务用量",
                     "奖励","奖励数量",
                     "藏身处","藏身处用量",
+                    "总计用量",
 //                    "生产","配方用量"
             };
             Row row = sheet1.createRow(0);
@@ -194,6 +195,11 @@ public class PriceRunner {
                     Cell cell = row.createCell(19);
                     cell.setCellValue(item.getHideOutNum());
                 }
+            }
+            int totalNeed = item.getHideOutNum() + item.getQuestNum();
+            if (totalNeed > 0) {
+                Cell cell = row.createCell(20);
+                cell.setCellValue(totalNeed);
             }
         }
         try (OutputStream fileOut = new FileOutputStream("塔科夫商人回购价目表.xlsx")) {
