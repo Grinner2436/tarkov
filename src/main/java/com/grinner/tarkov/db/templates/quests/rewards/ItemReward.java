@@ -1,6 +1,5 @@
 package com.grinner.tarkov.db.templates.quests.rewards;
 
-import com.grinner.tarkov.jmodel.Item;
 import lombok.Data;
 
 import java.util.List;

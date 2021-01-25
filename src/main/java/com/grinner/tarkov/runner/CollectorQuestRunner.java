@@ -11,6 +11,7 @@ import com.grinner.tarkov.ntree.NodeParser;
 import com.grinner.tarkov.ntree.Tree;
 import com.grinner.tarkov.util.FileUtil;
 import com.grinner.tarkov.util.LocaleUtil;
+import com.grinner.tarkov.util.QuestUtil;
 import com.grinner.tarkov.util.TreeUtils;
 
 import java.nio.file.Paths;
@@ -22,9 +23,6 @@ import java.util.stream.Collectors;
 public class CollectorQuestRunner {
     public static void main(String[] args) {
         try {
-            //基本设施
-            String questsFilePath  = "eft-database\\db\\templates\\quests.json";
-            Map<String, Quest> questMap = JSONObject.parseObject(FileUtil.getFileContent(questsFilePath), new TypeReference<Map<String, Quest>>(){});
 
             NodeParser<Quest> rootNodeParser = (tree, quest) -> {
                 Node<Quest> rootNode = new Node<Quest>(null) {
@@ -102,7 +100,7 @@ public class CollectorQuestRunner {
                 };
                 return node;
             };
-
+            Map<String, Quest> questMap = QuestUtil.questMap;
             Tree<Quest> tree = new Tree(questNodeParser, questMap);
 
             Quest rootQuest = new Quest("root无任务ID", "任务根", "root无商人ID");

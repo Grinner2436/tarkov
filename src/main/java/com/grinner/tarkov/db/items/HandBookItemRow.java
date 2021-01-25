@@ -1,10 +1,10 @@
-package com.grinner.tarkov.jmodel;
+package com.grinner.tarkov.db.items;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 //物品价格表，项目对象
 @Data
-public class PriceItem {
+public class HandBookItemRow {
 
     @JSONField(name = "Id")
     private String id;
@@ -14,5 +14,4 @@ public class PriceItem {
 
     @JSONField(name = "Price")
     private Integer price;
-
 }

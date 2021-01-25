@@ -1,4 +1,4 @@
-package com.grinner.tarkov.jmodel;
+package com.grinner.tarkov.db.items;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
@@ -6,10 +6,10 @@ import lombok.Data;
 import java.util.List;
 //物品价格表handbook.json，表对象
 @Data
-public class HandBook {
+public class HandBookTable {
     @JSONField(name = "Items")
-    private List<PriceItem> items;
+    private List<HandBookItemRow> items;
 
     @JSONField(name = "Categories")
-    private List<PriceItem> categories;
+    private List<HandBookItemRow> categories;
 }

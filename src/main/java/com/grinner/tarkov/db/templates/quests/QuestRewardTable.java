@@ -15,5 +15,7 @@ public class QuestRewardTable {
 
     @JSONField(name = "Success", deserializeUsing = RewardDeserializer.class)
     private List<Reward> finishRewards;
+
+    private List<QuestItem> rewardItems;
 }
 

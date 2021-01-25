@@ -1,7 +1,7 @@
 package com.grinner.tarkov.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.grinner.tarkov.jmodel.Trader;
+import com.grinner.tarkov.db.items.Trader;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +29,7 @@ public class FileUtil {
         }
         return tradersMap;
     }
+
     public static String getFileContent(Path filePath) {
         byte[] bytes = new byte[0];
         try {
@@ -39,11 +40,10 @@ public class FileUtil {
         String json = new String(bytes);
         return json;
     }
+
     public static String getFileContent(String path) {
         Path server = Paths.get(SERVER_PATH);
         Path filePath  = server.resolve(path);
         return getFileContent(filePath);
     }
-
-
 }

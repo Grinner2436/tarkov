@@ -1,4 +1,4 @@
-package com.grinner.tarkov.jmodel;
+package com.grinner.tarkov.db.items;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
