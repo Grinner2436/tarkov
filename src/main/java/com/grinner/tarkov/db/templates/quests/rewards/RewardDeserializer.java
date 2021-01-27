@@ -34,7 +34,7 @@ class RewardDeserializer implements ObjectDeserializer {
             } else if ("TraderUnlock".equals(clazz)) {
                 result.add(JSON.parseObject(sourceStr, TraderUnlock.class));
             } else {
-                System.out.println("未识别的任务奖励：" + sourceStr);
+                System.out.println("技能奖励：" + sourceStr);
             }
         });
         return (T) result;

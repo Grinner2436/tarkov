@@ -1,0 +1,38 @@
+1.去掉超链接和名称后面的]
+\]\(https://escapefromtarkov-zh.gamepedia.com/[a-zA-Z_0-9\(\)-\.]*\) \|
+|
+2.去掉名称前面的[
+\)\|[ ]*\[
+)|
+
+3.去掉图片前面的[
+    ^\|[ ]*\[!\[
+
+修复特殊的：
+1.
+[Door key (alternative)	
+Door key (alternative)	
+
+2.这里需要加空格
+File:Safe.png)[![Loose Loot]
+File:Safe.png) [![Loose Loot]
+
+File:WeaponRack.png)[![Loose L
+File:WeaponRack.png) [![Loose L
+
+(\)\|[ ]*\[RB)|(\)\|[ ]*\[Key RB)
+)|储备站RB
+
+(\)\|[ ]*\[Lab. )
+)|实验室
+
+West wing room 
+疗养院西楼
+East wing room 
+疗养院东楼
+
+Dorm guard desk
+海关宿舍警卫台
+
+Factory exit
+工厂出口

@@ -27,7 +27,7 @@ class HideoutRequirementDeserializer implements ObjectDeserializer {
             } else if ("Area".equals(clazz)) {
                 result.add(JSON.parseObject(sourceStr, AreaRequirement.class));
             } else {
-                System.out.println("未识别的任务奖励：" + sourceStr);
+//                System.out.println("技能奖励：" + sourceStr);
             }
         });
         return (T) result;
